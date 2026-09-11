@@ -26,6 +26,8 @@ func newBrowserDataExtractor() BrowserDataExtractor {
         return &WindowsBrowserDataExtractor{}
     } else if runtime.GOOS == "darwin" {
         return &DarwinBrowserDataExtractor{}
+    } else if runtime.GOOS == "linux" {
+        return &LinuxBrowserDataExtractor{}
     }
     return nil
 }
