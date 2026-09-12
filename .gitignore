@@ -6,3 +6,5 @@ o/
 *.log
 *.tmp
 /tmp/
+*.aarch64.elf
+*.com.dbg

