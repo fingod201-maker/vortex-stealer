@@ -1,0 +1,8 @@
+.aider*
+bin/
+*.deb
+o/
+.cosmocc/
+*.log
+*.tmp
+/tmp/

@@ -5,6 +5,8 @@ DEBUG_BUILD=$(EXECBIN)-$(VERSION)_debug.exe
 RELEASE_BUILD32=$(EXECBIN)-$(VERSION)_x86.exe
 RELEASE_BUILD64=$(EXECBIN)-$(VERSION)_x64.exe
 LINUX_RELEASE_BUILD=$(EXECBIN)-$(VERSION)_linux
+DARWIN_AMD64_BUILD=$(EXECBIN)-$(VERSION)_darwin_amd64
+DARWIN_ARM64_BUILD=$(EXECBIN)-$(VERSION)_darwin_arm64
 WASM_RELEASE_BUILD=$(EXECBIN)-$(VERSION).wasm
 
 define ANNOUNCE_BODY
@@ -22,13 +24,17 @@ Author: $(AUTHOR) -- Version $(VERSION)
 endef
 
 export ANNOUNCE_BODY
-.PHONY: release_x32 release_x64 debug linux_release wasm_release
+.PHONY: release_x32 release_x64 debug linux_release darwin_amd64 darwin_arm64 darwin_release wasm_release release_all
 
 release_x32: release_dir init build_release_x32
 release_x64: release_dir init build_release_x64
 debug: debug_dir init build_debug
 linux_release: release_dir init build_linux_release
+darwin_amd64: release_dir init build_darwin_amd64
+darwin_arm64: release_dir init build_darwin_arm64
+darwin_release: release_dir init build_darwin_amd64 build_darwin_arm64
 wasm_release: release_dir init build_wasm_release
+release_all: release_dir init build_release_x32 build_release_x64 build_linux_release build_darwin_amd64 build_darwin_arm64 build_wasm_release
 
 debug_dir:
 	@if [ ! -d bin ];then mkdir bin;fi
@@ -75,9 +81,23 @@ build_linux_release:
 	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
 	@echo [+]$(EXECBIN) linux release version compiled successfully
 
+build_darwin_amd64:
+	@echo "[*]Compiling release build for macOS amd64"
+	env GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -v -o bin/release/$(DARWIN_AMD64_BUILD)
+	@go clean -cache
+	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
+	@echo [+]$(EXECBIN) macOS amd64 release version compiled successfully
+
+build_darwin_arm64:
+	@echo "[*]Compiling release build for macOS arm64 (Apple Silicon)"
+	env GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -v -o bin/release/$(DARWIN_ARM64_BUILD)
+	@go clean -cache
+	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
+	@echo [+]$(EXECBIN) macOS arm64 release version compiled successfully
+
 build_wasm_release:
 	@echo "[*]Compiling release build for WebAssembly"
-	env GOOS=js GOARCH=wasm go build -o bin/release/$(WASM_RELEASE_BUILD) main.go
-	@cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" bin/release/
+	env GOOS=js GOARCH=wasm go build -o bin/release/$(WASM_RELEASE_BUILD) .
+	@cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" bin/release/ 2>/dev/null || cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" bin/release/ 2>/dev/null || cp wasm_exec.js bin/release/ 2>/dev/null || true
 	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
 	@echo [+]$(EXECBIN) WebAssembly release version compiled successfully

