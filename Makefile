@@ -5,6 +5,7 @@ DEBUG_BUILD=$(EXECBIN)-$(VERSION)_debug.exe
 RELEASE_BUILD32=$(EXECBIN)-$(VERSION)_x86.exe
 RELEASE_BUILD64=$(EXECBIN)-$(VERSION)_x64.exe
 LINUX_RELEASE_BUILD=$(EXECBIN)-$(VERSION)_linux
+WASM_RELEASE_BUILD=$(EXECBIN)-$(VERSION).wasm
 
 define ANNOUNCE_BODY
 
@@ -21,12 +22,13 @@ Author: $(AUTHOR) -- Version $(VERSION)
 endef
 
 export ANNOUNCE_BODY
-.PHONY: release_x32 release_x64 debug linux_release
+.PHONY: release_x32 release_x64 debug linux_release wasm_release
 
 release_x32: release_dir init build_release_x32
 release_x64: release_dir init build_release_x64
 debug: debug_dir init build_debug
 linux_release: release_dir init build_linux_release
+wasm_release: release_dir init build_wasm_release
 
 debug_dir:
 	@if [ ! -d bin ];then mkdir bin;fi
@@ -72,3 +74,10 @@ build_linux_release:
 	@go clean -cache
 	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
 	@echo [+]$(EXECBIN) linux release version compiled successfully
+
+build_wasm_release:
+	@echo "[*]Compiling release build for WebAssembly"
+	env GOOS=js GOARCH=wasm go build -o bin/release/$(WASM_RELEASE_BUILD) main.go
+	@cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" bin/release/
+	@echo [+]$(EXECBIN) - $(VERSION) - $(AUTHOR)
+	@echo [+]$(EXECBIN) WebAssembly release version compiled successfully
